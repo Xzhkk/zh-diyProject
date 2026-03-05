@@ -1,0 +1,31 @@
+server:
+  port: 8080 # 网关作为系统的统一入口，通常占用 8080 或 80 端口
+
+spring:
+  application:
+    name: zh-gateway # 当前服务在 Zookeeper 中的名称
+
+  cloud:
+    # 1. Zookeeper 配置
+    zookeeper:
+      connect-string: 127.0.0.1:2181 # 你的 Zookeeper 服务器地址，如果是本地默认就是这个
+      discovery:
+        enabled: true # 开启注册与发现
+        register: true # 将网关自己也注册到 ZK 中（方便统一监控管理）
+
+    # 2. Gateway 网关路由配置
+    gateway:
+      discovery:
+        locator:
+          enabled: true # 开启从注册中心动态发现服务并自动创建路由（可选，但推荐开启）
+          lower-case-service-id: true # 注册中心的服务名统一转为小写
+
+      # 核心：手动路由规则配置
+      routes:
+        # --- 示例：路由到用户服务 ---
+        - id: user_service_route             # 路由 ID，全局唯一即可，建议起个有意义的名字
+          uri: lb://zh-user                  # lb:// 代表开启负载均衡，zh-user 是目标微服务在 ZK 中的名字
+          predicates:
+            - Path=/api/user/** # 断言：当浏览器访问 http://localhost:8080/api/user/xxx 时触发此规则
+          filters:
+            - StripPrefix=1                  # 过滤器：转发前去掉路径的第一层（/api），实际发给子服务的是 /user/xxx
