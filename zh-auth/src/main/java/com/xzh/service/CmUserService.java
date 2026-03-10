@@ -16,4 +16,6 @@ public interface CmUserService extends IService<CmUser> {
 
     BaseResponse getCaptcha(Map<String,Object> map);
 
+    BaseResponse register(Map<String,Object> map);
+
 }
