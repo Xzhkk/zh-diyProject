@@ -1,0 +1,57 @@
+# ==========================================
+# 1. 基础服务配置
+# ==========================================
+server:
+  port: 8082 # 认证服务占用 8081 端口
+
+spring:
+  application:
+    name: zh-auth # 注册到 Nacos 和供网关调用的全局唯一服务名
+
+  # ==========================================
+  # 2. 微服务注册中心配置 (Nacos)
+  # ==========================================
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848 # Nacos 服务端地址
+
+  # ==========================================
+  # 3. 数据库连接配置 (MySQL 8.x 标准写法)
+  # ==========================================
+  datasource:
+    # ⚠️ 请把 zh_diy_project 换成你本地实际的数据库名
+    # 参数解析：开启 Unicode、UTF-8 编码、设置上海时区（防止时间差8小时）、允许公钥检索
+    url: jdbc:mysql://127.0.0.1:3306/zh-diyproject?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&verifyServerCertificate=false&useSSL=false
+    username: root        # ⚠️ 你的 MySQL 账号
+    password: root123456789        # ⚠️ 你的 MySQL 密码
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL 8.x 驱动
+
+  # ==========================================
+  # 4. 缓存配置 (Redis)
+  # ==========================================
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      userName: root
+      password: root        # 如果 Redis 没密码就留空
+      database: 0
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: 10000ms
+
+# ==========================================
+# 5. ORM 框架配置 (MyBatis-Plus)
+# ==========================================
+mybatis-plus:
+  # 告诉框架你的 Mapper XML 文件放在哪（如果你习惯用注解写 SQL，这行可以不写）
+  mapper-locations: classpath*:/com.xzh.mapper/*.xml
+  # 告诉框架你的实体类包在哪，这样 XML 里就不需要写全限定类名了
+  type-aliases-package: com.xzh.bean
+  configuration:
+    # 开启驼峰命名自动映射 (数据库的 user_name 会自动映射到 Java 的 userName)
+    map-underscore-to-camel-case: true
+    # 🌟 强烈建议在开发环境开启这个日志，可以在控制台打印出执行的真实 SQL 语句！
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
