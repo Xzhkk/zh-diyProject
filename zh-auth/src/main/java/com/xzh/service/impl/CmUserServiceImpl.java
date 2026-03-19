@@ -15,6 +15,7 @@ import com.xzh.bean.CmUser;
 import com.xzh.result.BaseResponse;
 import com.xzh.service.CmUserService;
 import com.xzh.mapper.CmUserMapper;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
     public static final String LOGIN_TOKEN_PREFIX = "login:token:";
 
 
-    @Autowired
+    @Resource
     private StringRedisTemplate redisTemplate;
 
     @Override
