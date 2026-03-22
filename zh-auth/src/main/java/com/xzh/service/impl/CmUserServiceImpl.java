@@ -38,7 +38,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
 
 
     @Resource
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public BaseResponse login(Map<String, Object> map) {
@@ -51,7 +51,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         }
         String redisKey = CAPTCHA_PREFIX + uuid;
         // 从 Redis 拿出真正的答案
-        String correctCode = redisTemplate.opsForValue().get(redisKey);
+        String correctCode = stringRedisTemplate.opsForValue().get(redisKey);
         if (correctCode == null) {
             return BaseResponse.error("验证码已过期，请刷新");
         }
@@ -74,7 +74,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         String tokenRedisKey = LOGIN_TOKEN_PREFIX + token;
         //返回登录信息给前端
         user.setPassWord(null);
-        redisTemplate.opsForValue().set(tokenRedisKey, JSONUtil.toJsonStr(user), 2, TimeUnit.HOURS);
+        stringRedisTemplate.opsForValue().set(tokenRedisKey, JSONUtil.toJsonStr(user), 2, TimeUnit.HOURS);
         Map<String,Object> res = new HashMap<>();
         res.put("token",token);
         res.put("nickName",user.getNickName());
@@ -91,7 +91,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         String result = captcha.text();
         String uuid = UUID.randomUUID().toString();
         String redisKey = CAPTCHA_PREFIX + uuid;
-        redisTemplate.opsForValue().set(redisKey, result, 1, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(redisKey, result, 1, TimeUnit.MINUTES);
         Map<String, Object> response = new HashMap<>();
         response.put("code", 200);
         response.put("msg", "获取验证码成功");

@@ -37,5 +37,5 @@ spring:
       - id: auth_service_route             # 路由 ID，全局唯一即可
         uri: lb://zh-auth                  # lb:// 代表开启负载均衡，去 Nacos 里找名为 zh-auth 的服务
         predicates:
-          - Path=/api/auth/** # 断言：当前端访问 http://localhost:8080/api/auth/login 时，触发此规则转发
+          - Path=/auth/** # 断言：当前端访问 http://localhost:8080/api/auth/login 时，触发此规则转发
 

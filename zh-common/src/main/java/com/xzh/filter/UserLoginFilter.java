@@ -15,12 +15,12 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class UserLoginFilter implements HandlerInterceptor {
     @Resource
-    private StringRedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String auth = request.getHeader("auth");
-        String userJson = redisTemplate.opsForValue().get(auth);
+        String userJson = stringRedisTemplate.opsForValue().get(auth);
         if (StrUtil.isNotBlank(userJson)) {
             UserInfoModel bean = JSONUtil.toBean(userJson, UserInfoModel.class);
             UserContextHolder.setUserInfo(bean);
