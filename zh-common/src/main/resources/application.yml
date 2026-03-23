@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    # 这是主库 (master)，代码默认读取路径
+    url: jdbc:mysql://127.0.0.1:3306/zh-diyproject?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&verifyServerCertificate=false&useSSL=false
+    username: root
+    password: root123456789
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+xzh:
+  datasource:
+    log:
+      enabled: true
+      db-name: zh-log # 告诉代码日志库的名字，代码会自动替换 URL 里的数据库名
+      # 如果日志库在另一台服务器，可以放开下面的配置
+      # url: jdbc:mysql://127.0.0.1:3306/zh-log?...
+      # username: root
+      # password: root123456789
