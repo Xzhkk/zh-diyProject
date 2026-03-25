@@ -2,7 +2,7 @@ package com.xzh.aspect;
 
 import cn.hutool.json.JSONUtil;
 import com.xzh.bean.CmServiceLog;
-import com.xzh.config.ServiceLogTableNameContextHolder;
+import com.xzh.datasource.ServiceLogTableNameContextHolder;
 import com.xzh.log.ServiceLogWriter;
 import com.xzh.service.CmServiceLogService;
 import org.aspectj.lang.ProceedingJoinPoint;

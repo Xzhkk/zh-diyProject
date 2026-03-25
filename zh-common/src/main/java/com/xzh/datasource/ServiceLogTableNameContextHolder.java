@@ -1,4 +1,4 @@
-package com.xzh.config;
+package com.xzh.datasource;
 
 public class ServiceLogTableNameContextHolder {
     private static final ThreadLocal<String> TABLE_NAME_HOLDER = new ThreadLocal<>();

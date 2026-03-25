@@ -32,4 +32,9 @@ public class CmUserController {
         return cmUserService.login(map);
     }
 
+    @RequestMapping("/test")
+    public BaseResponse test(@RequestBody Map<String,Object> map) {
+        return BaseResponse.success();
+    }
+
 }

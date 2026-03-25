@@ -55,3 +55,11 @@ mybatis-plus:
     map-underscore-to-camel-case: true
     # 🌟 强烈建议在开发环境开启这个日志，可以在控制台打印出执行的真实 SQL 语句！
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+xzh:
+  datasource:
+    log:
+      enabled: true
+      db-name: zh-log #
+      url: jdbc:mysql://127.0.0.1:3306/zh-log?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&verifyServerCertificate=false&useSSL=false
+      username: root
+      password: root123456789

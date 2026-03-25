@@ -1,4 +1,4 @@
-package com.xzh.config;
+package com.xzh.datasource;
 
 import com.xzh.constants.DataSourceConstants;
 
