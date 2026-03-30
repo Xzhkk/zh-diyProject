@@ -1,11 +1,13 @@
 package com.xzh.controller;
 
+import com.xzh.model.CmUserQueryRequest;
 import com.xzh.result.BaseResponse;
 import com.xzh.service.CmUserService;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
@@ -35,6 +37,17 @@ public class CmUserController {
     @RequestMapping("/test")
     public BaseResponse test(@RequestBody Map<String,Object> map) {
         return BaseResponse.success();
+    }
+
+    @PostMapping("/users/query")
+    public BaseResponse queryUsers(@RequestBody(required = false) CmUserQueryRequest request) {
+        return cmUserService.queryUsers(request);
+    }
+
+    @PostMapping("/users/export")
+    public void exportUsers(@RequestBody(required = false) CmUserQueryRequest request,
+                            HttpServletResponse response) {
+        cmUserService.exportUsers(request, response);
     }
 
 }

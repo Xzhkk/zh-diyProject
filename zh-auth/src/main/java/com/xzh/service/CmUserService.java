@@ -2,7 +2,9 @@ package com.xzh.service;
 
 import com.xzh.bean.CmUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.xzh.model.CmUserQueryRequest;
 import com.xzh.result.BaseResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.Map;
 
@@ -17,5 +19,6 @@ public interface CmUserService extends IService<CmUser> {
     BaseResponse getCaptcha(Map<String,Object> map);
 
     BaseResponse register(Map<String,Object> map);
+
 
 }

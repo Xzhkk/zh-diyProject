@@ -1,29 +1,36 @@
 package com.xzh.service.impl;
 
 import cn.hutool.core.lang.UUID;
-import cn.hutool.core.text.UnicodeUtil;
-import cn.hutool.core.util.ByteUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import cn.hutool.json.JSONUtil;
+import com.alibaba.excel.EasyExcel;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wf.captcha.ArithmeticCaptcha;
 import com.xzh.base.BaseServiceImpl;
 import com.xzh.bean.CmUser;
+import com.xzh.mapper.CmUserMapper;
 import com.xzh.result.BaseResponse;
 import com.xzh.service.CmUserService;
-import com.xzh.mapper.CmUserMapper;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.sql.Wrapper;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
 * @author kk
@@ -35,6 +42,9 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
 
     public static final String CAPTCHA_PREFIX = "captcha:";
     public static final String LOGIN_TOKEN_PREFIX = "login:token:";
+    private static final DateTimeFormatter EXPORT_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+    private static final LinkedHashMap<String, String> EXPORT_FIELD_LABELS = new LinkedHashMap<>();
+
 
 
     @Resource
@@ -50,7 +60,6 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
             return BaseResponse.error("验证码或uuid不能为空");
         }
         String redisKey = CAPTCHA_PREFIX + uuid;
-        // 从 Redis 拿出真正的答案
         String correctCode = stringRedisTemplate.opsForValue().get(redisKey);
         if (correctCode == null) {
             return BaseResponse.error("验证码已过期，请刷新");
@@ -66,13 +75,12 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         if (user == null) {
             return BaseResponse.error("账号或密码错误");
         }
-        boolean isMatch = BCrypt.checkpw(passWord, user.getPassWord()); // 这里的 getPassWord() 对应你实体类里的方法
+        boolean isMatch = BCrypt.checkpw(passWord, user.getPassWord());
         if (!isMatch) {
             return BaseResponse.error("账号或密码错误");
         }
         String token = IdUtil.fastSimpleUUID();
         String tokenRedisKey = LOGIN_TOKEN_PREFIX + token;
-        //返回登录信息给前端
         user.setPassWord(null);
         stringRedisTemplate.opsForValue().set(tokenRedisKey, JSONUtil.toJsonStr(user), 2, TimeUnit.HOURS);
         Map<String,Object> res = new HashMap<>();
@@ -84,10 +92,8 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
 
     @Override
     public BaseResponse getCaptcha(Map<String, Object> map) {
-        // 1. 创建算术类型的验证码 (宽130, 高48, 2位数运算)
         ArithmeticCaptcha captcha = new ArithmeticCaptcha(130, 48);
         captcha.setLen(3);
-        // 2. 获取运算结果 (注意：text() 拿到的是结果，比如图片是 1+2=?, text 就是 "3")
         String result = captcha.text();
         String uuid = UUID.randomUUID().toString();
         String redisKey = CAPTCHA_PREFIX + uuid;
@@ -97,7 +103,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         response.put("msg", "获取验证码成功");
         Map<String, String> data = new HashMap<>();
         data.put("uuid", uuid);
-        data.put("imgBase64", captcha.toBase64()); // 直接转成 Base64 返回，避开底层 Servlet 依赖
+        data.put("imgBase64", captcha.toBase64());
         response.put("data", data);
         return BaseResponse.success(response);
     }
@@ -105,8 +111,7 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
     @Override
     public BaseResponse register(Map<String, Object> map) {
         String userName = (String) map.get("userName");
-        String passWord = (String) map.get("userName");
-        String code = (String) map.get("code");
+        String passWord = (String) map.get("passWord");
         CmUser user = this.findOneByField(CmUser::getUserName, userName);
         if (user != null) {
             return BaseResponse.error("当前用户已注册");
@@ -114,14 +119,11 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         String hashPassword = BCrypt.hashpw(passWord, BCrypt.gensalt());
         CmUser newUser = new CmUser();
         newUser.setUserName(userName);
-        newUser.setPassWord(hashPassword); // 存入数据库的是类似于 $2a$10$wK... 的安全密文
-        // 给个默认的随机昵称，比如 "用户_a1b2c3"
+        newUser.setPassWord(hashPassword);
         newUser.setNickName("用户_" + IdUtil.fastSimpleUUID().substring(0, 6));
         this.save(newUser);
         return BaseResponse.success();
     }
+
+
 }
-
-
-
-

@@ -32,6 +32,8 @@
         <spring-boot.version>3.2.4</spring-boot.version>
         <mysql.version>8.3.0</mysql.version>
         <kafka.version>3.8.0</kafka.version>
+        <easyexcel.version>3.3.4</easyexcel.version>
+
     </properties>
 
     <dependencyManagement>
@@ -62,6 +64,12 @@
                 <groupId>com.github.whvcse</groupId>
                 <artifactId>easy-captcha</artifactId>
                 <version>${easy-captcha.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>easyexcel</artifactId>
+                <version>${easyexcel.version}</version>
             </dependency>
 
 
