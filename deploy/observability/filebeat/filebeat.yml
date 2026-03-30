@@ -1,0 +1,26 @@
+filebeat.inputs:
+  - type: filestream
+    id: project-json-logs
+    enabled: true
+    paths:
+      - /workspace/logs/*.json.log
+      - /workspace/*/logs/*.json.log
+    parsers:
+      - ndjson:
+          target: ""
+          overwrite_keys: true
+          add_error_key: true
+    fields_under_root: true
+    fields:
+      logSource: filebeat
+      environment: local
+
+output.kafka:
+  hosts: ["kafka:9092"]
+  topic: app-logs
+  required_acks: 1
+  compression: gzip
+  codec.json:
+    pretty: false
+
+logging.level: info
