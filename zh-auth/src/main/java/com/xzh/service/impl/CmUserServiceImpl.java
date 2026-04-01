@@ -10,12 +10,16 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wf.captcha.ArithmeticCaptcha;
 import com.xzh.base.BaseServiceImpl;
+import com.xzh.bean.CmDynamicExcelConfig;
 import com.xzh.bean.CmUser;
 import com.xzh.mapper.CmUserMapper;
 import com.xzh.result.BaseResponse;
+import com.xzh.service.CmDynamicExcelConfigService;
 import com.xzh.service.CmUserService;
+import com.xzh.utils.ExcelExportUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +53,10 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
 
     @Resource
     private StringRedisTemplate stringRedisTemplate;
+    @Resource
+    private CmDynamicExcelConfigService cmDynamicExcelConfigService;
+    @Resource
+    private ExcelExportUtils excelExportUtils;
 
     @Override
     public BaseResponse login(Map<String, Object> map) {
@@ -123,6 +131,13 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         newUser.setNickName("用户_" + IdUtil.fastSimpleUUID().substring(0, 6));
         this.save(newUser);
         return BaseResponse.success();
+    }
+
+    @Override
+    public void exportUser(HttpServletResponse response,Map<String, Object> map) {
+        CmDynamicExcelConfig config = cmDynamicExcelConfigService.getConfigByCode("123");
+        List<CmUser> list = this.list();
+        excelExportUtils.export(response,config,list);
     }
 
 

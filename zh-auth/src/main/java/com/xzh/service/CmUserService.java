@@ -20,5 +20,7 @@ public interface CmUserService extends IService<CmUser> {
 
     BaseResponse register(Map<String,Object> map);
 
+    void exportUser(HttpServletResponse response,Map<String,Object> map);
+
 
 }
