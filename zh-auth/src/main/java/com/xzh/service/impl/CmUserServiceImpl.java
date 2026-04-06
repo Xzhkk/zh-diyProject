@@ -140,5 +140,14 @@ public class CmUserServiceImpl extends BaseServiceImpl<CmUserMapper, CmUser> imp
         excelExportUtils.export(response,config,list);
     }
 
+    @Override
+    public BaseResponse singleExport100W(Map<String, Object> map) {
+        //1.创建任务表
+
+
+
+        return null;
+    }
+
 
 }

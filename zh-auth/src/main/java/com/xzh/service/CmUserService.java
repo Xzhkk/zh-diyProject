@@ -21,5 +21,5 @@ public interface CmUserService extends IService<CmUser> {
 
     void exportUser(HttpServletResponse response,Map<String,Object> map);
 
-
+    BaseResponse singleExport100W(Map<String,Object> map);
 }
